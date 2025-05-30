@@ -80,3 +80,47 @@ def analyze_data(df):
    corr, p_value = pearsonr(df['pH'], df['Spoilage_Score'])
    # prints the results of the correlation analysis
    print(f"Correlation between pH and Spoilage Score: {corr:.2f} (p-value: {p_value:.4f})")
+
+# Takes the Pandas DataFrame(df)
+def plot_data(df):
+   # exits the function early of the data is invalid
+   if df is None:
+       return
+   # Creates a multi-page PDF named meat_ph_analysis_report.pdf and allows you to add multiple plots to it
+   with PdfPages('meat_ph_analysis_report.pdf') as pdf:
+       # First Plot: pH Over Time
+       # Starts a new figure (plot) with width 10 and height 6 inches.
+       plt.figure(figsize=(10, 6))
+       # Creates a line plot using Seaborn - x-axis is Date, y-axis is pH, color each lone based on Meat_Type and adds markers to each data point
+       sns.lineplot(data=df, x='Date', y='pH', hue='Meat_Type', marker='o')
+       # Added titles and labels
+       plt.title('Surface pH of Meat Products Over Time', fontsize=14)
+       plt.xlabel('Date', fontsize=12)
+       plt.ylabel('pH', fontsize=12)
+       # Rotates x axis so no overlap
+       plt.xticks(rotation=45)
+       # tight_layput() fixes spacing issues
+       plt.tight_layout()
+       # Saves plot to PDF
+       pdf.savefig()
+       #Closes the plot to free memory before generating the next one
+       plt.close()
+
+
+       # Second Plot: Spoilage Score Over Time
+       # Starts a new figure (plot) with width 10 and height 6 inches.
+       plt.figure(figsize=(10, 6))
+       # Creates a line plot using Seaborn - x-axis is Date, y-axis is pH, color each lone based on Meat_Type and adds markers to each data point
+       sns.lineplot(data=df, x='Date', y='Spoilage_Score', hue='Meat_Type', marker='o')
+       # Added titles and labels
+       plt.title('Spoilage Score of Meat Products Over Time', fontsize=14)
+       plt.xlabel('Date', fontsize=12)
+       plt.ylabel('Spoilage Score (1=Fresh, 5=Spoiled)', fontsize=12)
+       # Rotates xaxis so no overlap
+       plt.xticks(rotation=45)
+       # tight_layput() fixes spacing issues
+       plt.tight_layout()
+       # Saves plot to PDF
+       pdf.savefig()
+       #Closes the plot to free memory before generating the next one
+       plt.close()
