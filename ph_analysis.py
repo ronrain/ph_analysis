@@ -124,3 +124,28 @@ def plot_data(df):
        pdf.savefig()
        #Closes the plot to free memory before generating the next one
        plt.close()
+
+# defines the main function, entry point of script
+def main():
+   # Calls the load_data() function
+   # Attempts to read and validate meat_ph_data.csv
+   # returns a pandas DataFrame(df) or None if loading fails
+   df = load_data()
+   # Checks if data was successfully loaded
+   if df is not None:
+       # Calls analyze_data() function
+       # Cleans data, calculates stats by meat_type and prints correlation between pH and spoilage
+       analyze_data(df)
+       # Calls plot_data(df)
+       # Generates two time-series plots (pH and spoilage over time) and saves them to PDF report
+       plot_data(df)
+       print("Analysis complete. Check 'meat_ph_analysis_report.pdf' and 'summary_stats.csv'. ")
+
+
+# Python built-in condition
+# __name__ is a special variable that sets
+       #if the file is being run directly, __name__ == "__main__"
+       #if its being imported as a module in another script, __name__ will equal the name of the file
+if __name__ == "__main__":
+   # Calls the main() function
+   main()
