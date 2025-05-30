@@ -1,0 +1,43 @@
+Date,Meat_Type,pH,Color,Odor,Texture,Spoilage_Score
+2025-06-01,Beef,5.60,Red,None,Firm,1.0
+2025-06-01,Chicken,6.00,Bright,None,Firm,1.0
+2025-06-01,Pork,5.80,Pink,None,Firm,1.0
+2025-06-02,Beef,5.65,Red,Slight,Firm,1.3
+2025-06-02,Chicken,6.07,Bright,Slight,Firm,1.3
+2025-06-02,Pork,5.86,Pink,Slight,Firm,1.3
+2025-06-03,Beef,5.70,Red,Slight,Firm,1.6
+2025-06-03,Chicken,6.14,Bright,Slight,Firm,1.6
+2025-06-03,Pork,5.92,Pink,Slight,Firm,1.6
+2025-06-04,Beef,5.75,Dark Red,Medium,Soft,1.9
+2025-06-04,Chicken,6.21,Yellow,Medium,Soft,1.9
+2025-06-04,Pork,5.98,Light Pink,Medium,Soft,1.9
+2025-06-05,Beef,5.80,Dark Red,Medium,Soft,2.2
+2025-06-05,Chicken,6.28,Yellow,Medium,Soft,2.2
+2025-06-05,Pork,6.04,Light Pink,Medium,Soft,2.2
+2025-06-06,Beef,5.85,Gray,Foul,Tender,2.5
+2025-06-06,Chicken,6.35,Yellow,Foul,Tender,2.5
+2025-06-06,Pork,6.10,Gray,Foul,Tender,2.5
+2025-06-07,Beef,5.90,Gray,Foul,Tender,2.8
+2025-06-07,Chicken,6.42,Gray,Foul,Tender,2.8
+2025-06-07,Pork,6.16,Gray,Foul,Tender,2.8
+2025-06-08,Beef,5.95,Brown,Strong,Slimy,3.1
+2025-06-08,Chicken,6.49,Gray,Strong,Slimy,3.1
+2025-06-08,Pork,6.22,Brown,Strong,Slimy,3.1
+2025-06-09,Beef,6.00,Brown,Strong,Slimy,3.4
+2025-06-09,Chicken,6.56,Gray,Strong,Slimy,3.4
+2025-06-09,Pork,6.28,Brown,Strong,Slimy,3.4
+2025-06-10,Beef,6.05,Gray,Strong,Slimy,3.7
+2025-06-10,Chicken,6.63,Gray,Strong,Slimy,3.7
+2025-06-10,Pork,6.34,Brown,Strong,Slimy,3.7
+2025-06-11,Beef,6.10,Gray,Strong,Slimy,4.0
+2025-06-11,Chicken,6.70,Gray,Strong,Slimy,4.0
+2025-06-11,Pork,6.40,Brown,Strong,Slimy,4.0
+2025-06-12,Beef,6.15,Gray,Strong,Slimy,4.3
+2025-06-12,Chicken,6.77,Gray,Strong,Slimy,4.3
+2025-06-12,Pork,6.46,Brown,Strong,Slimy,4.3
+2025-06-13,Beef,6.20,Gray,Strong,Slimy,4.6
+2025-06-13,Chicken,6.84,Gray,Strong,Slimy,4.6
+2025-06-13,Pork,6.52,Brown,Strong,Slimy,4.6
+2025-06-14,Beef,6.25,Gray,Strong,Slimy,4.9
+2025-06-14,Chicken,6.91,Gray,Strong,Slimy,4.9
+2025-06-14,Pork,6.58,Brown,Strong,Slimy,4.9
