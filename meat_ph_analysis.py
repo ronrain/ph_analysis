@@ -125,14 +125,38 @@ def plot_data(df):
        #Closes the plot to free memory before generating the next one
        plt.close()
 
+#Prediction model for Shelf Life
+# Using df from DataFrame meat data
+# spoilage threshold using 4 as default
+def predict_shelf_life(df, spoilage_threshold=4.0):
+    """Predict shefl life (days until spoilage) for meat type"""
+    try:
+        # Filters the DataFrame to only include rows where meat is considereed spoiled
+        # Keeps only Meat_type and Date column for analysis
+        spoiled = df[df['Spoilage_Score'] >= spoilage_threshold][['Meat_Type', 'Date']]
+        # Groups the filtered data by Meat_Type, and finds the earliest spoilage date for each type
+        # reset_index() turns the groupby result into a clean DataFrame 
+        shelf_life = spoiled.groupby('Meat_Type')['Date'].min().reset_index()
+        # sets a fixed date (assumed production or packaging date)
+        start_date = pd.to_datetime('2025-06-01')
+        # adds a new column and calculates number of days from the start date until spoilage
+        shelf_life['Days_Until_Spoilage'] = (shelf_life['Date'] - start_date).dt.days
+        print("\nPredicted Shelf Life (days until spoilage score >= 4.0):")
+        print(shelf_life[['Meat_Type', 'Days_Until_Spoilage']])
+        return shelf_life
+    except Exception as e:
+        print(f"Error predicting shelf life: {e}")
+        return None
+
+
 # defines the main function, entry point of script
 def main():
    # Calls the load_data() function
    # Attempts to read and validate meat_ph_data.csv
    # returns a pandas DataFrame(df) or None if loading fails
-   df = load_data()
+    df = load_data()
    # Checks if data was successfully loaded
-   if df is not None:
+    if df is not None:
        # Calls analyze_data() function
        # Cleans data, calculates stats by meat_type and prints correlation between pH and spoilage
        analyze_data(df)
@@ -140,6 +164,12 @@ def main():
        # Generates two time-series plots (pH and spoilage over time) and saves them to PDF report
        plot_data(df)
        print("Analysis complete. Check 'meat_ph_analysis_report.pdf' and 'summary_stats.csv'. ")
+    shelf_life = predict_shelf_life(df)
+    # If predicition was successful, saves the shelf life data to a CSV file
+    # index=False means dont write the row numbers to the file
+    if shelf_life is not None:
+        shelf_life.to_csv('shelf_life_prediction.csv', index=False)
+   
 
 
 # Python built-in condition
