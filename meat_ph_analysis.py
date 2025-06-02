@@ -59,13 +59,27 @@ def load_data(file_path='meat_ph_data.csv'):
 # Defines a function named analyze_data
 # It takes a DataFrame df as input - returned from the load_data() function
 def analyze_data(df):
+   """Analyze pH data for fresh vs. frozen-thawed meat, including statistical tests."""
    # Checks if the input data is invalid
    # if it is, the function exits early to avoid errors down the line
    if df is None:
        return
    # Remove any rows that are missing pH or Spoilage_Scores
    # ENsures analysis isn't skewed or broken from missing values
-   df = df.dropna(subset=['pH', 'Spoilage_Score'])
+   df = df.dropna(subset=['pH'])
+   try:
+       # Calculate summary statistics (mean, std, min, max) by Meat_Type and Group
+       summary_stats = df.groupby(['Meat_Type', 'Group'])['pH'].describe().round(2)
+       # Flatten multi-level columns for clarity
+       summary_stats = summary_stats[['mean', 'std', 'min', 'max']]
+       # Rename column for readability
+       summary_stats.columns = ['pH_Mean', 'pH_Std', 'pH_Min', 'pH_Max']
+       # Reset Index to make Meat_Type and Group columns
+       summary_stats = summary_stats.reset_index()
+       # Save summary statistics to CSV
+       summary_stats.to_csv('ph_summary_stats.csv', index=False)
+       # Print confirmation
+       print("Summary statistics saved to 'ph_summary_stats.csv")
    # Standardizes the text in the Meat_Type column by capitalizing the first letter of each entry
    df['Meat_Type'] = df['Meat_Type'].str.capitalize()
    # Groups the data by Meat_Type
