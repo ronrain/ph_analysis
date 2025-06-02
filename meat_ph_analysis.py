@@ -80,6 +80,17 @@ def analyze_data(df):
        summary_stats.to_csv('ph_summary_stats.csv', index=False)
        # Print confirmation
        print("Summary statistics saved to 'ph_summary_stats.csv")
+
+       # Correlation: pH vs Day for each Meat_Type and Group
+       # Loop through each meat type
+       for meat in df['Meat_Type'].unique():
+           # Loop through each group
+           for group in ['Fresh', 'Frozen-Thawed']:
+               subset = df [(df['Meat_Type'] == meat) & (df['Group'] == group)]
+               # Calculate Pearson correlation between Day and pH
+               corr, p_value = pearsonr(subset['Day'], subset['pH'])
+               # Print correlation and p-value
+               print(f"Correlation (pH vs. Day) for {meat} ({group}): {corr:.2f} (p-vale {p_value:.4f}")
    # Standardizes the text in the Meat_Type column by capitalizing the first letter of each entry
    df['Meat_Type'] = df['Meat_Type'].str.capitalize()
    # Groups the data by Meat_Type
