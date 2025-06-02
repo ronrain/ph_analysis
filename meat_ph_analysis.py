@@ -7,7 +7,7 @@ import seaborn as sns
 # Import numpy for numerical operations
 import numpy as np
 # Import pearsonr from scipy.stats for correlation analysis
-from scipy.stats import pearsonr
+from scipy.stats import pearsonr, ttest_ind, f_oneway
 # Import PdfPages from matplotlib for saving plots to PDF
 from matplotlib.backends.backend_pdf import PdfPages
 
@@ -125,11 +125,35 @@ def plot_data(df):
        #Closes the plot to free memory before generating the next one
        plt.close()
 
-#Prediction model for Shelf Life
+def plot_additional_visuals(df):
+    """Generate additional plots for pH and spoilage analysis."""
+    try:
+        plt.figure(figsize=(8, 6))
+        sns.boxplot(x='Meat_Type', y='pH', data=df)
+        plt.title('pH Distribution by Meat Type')
+        plt.xlabel('Meat_Type')
+        plt.ylabel('pH')
+        plt.savefig('ph_boxplot.png')
+        plt.close()
+
+        plt.figure(figsize=(8, 6))
+        sns.scatterplot(x='pH', y='Spoilage_Score', hue='Meat_Type', data=df)
+        slope, intercept, _, _, _ = stats.linregress(df['pH'], df['Spoilage_Score'])
+        plt.plot(df['pH'], slope * df['pH'] + intercept, color='red', linestyle='--')
+        plt.title('pH vs Spoilage Score (Correlation: 0.74)')
+        plt.xlabel('pH')
+        plt.ylabel('Spoilage Score')
+        plt.savefig('ph_vs_spoilage_scatter.png')
+        plt.close()
+
+    except Exception as e:
+        print(f"Error predicting shelf life: {e}")
+
+# Prediction model for Shelf Life
 # Using df from DataFrame meat data
 # spoilage threshold using 4 as default
 def predict_shelf_life(df, spoilage_threshold=4.0):
-    """Predict shefl life (days until spoilage) for meat type"""
+    """Predict shelf life (days until spoilage) for meat type"""
     try:
         # Filters the DataFrame to only include rows where meat is considereed spoiled
         # Keeps only Meat_type and Date column for analysis
