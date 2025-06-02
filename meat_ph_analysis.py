@@ -103,32 +103,18 @@ def analyze_data(df):
            t_stat, p_value = ttest_ind(fresh_ph, frozen_ph, equal_var=False)
            # Print t-test results
            print(f"T-test (Fresh vs. Frozen-Thawed) for {meat}: t={t_stat:.2f}, p={p_value:4f}")
-               
-   # Standardizes the text in the Meat_Type column by capitalizing the first letter of each entry
-   df['Meat_Type'] = df['Meat_Type'].str.capitalize()
-   # Groups the data by Meat_Type
-   # Calculates the mean and standard deviation of pH and Spoilage_Score
-   # .round(2) makes the output easier to read by rounding to 2 decimal places
-   summary_stats = df.groupby('Meat_Type').agg({
-       'pH': ['mean', 'std'],
-       'Spoilage_Score': ['mean', 'std']
-     }).round(2)
-   #Flaten multi-level columns to single level
-   summary_stats.columns = ['pH_Mean', 'pH_Std', 'Spoilage_Mean', 'Spoilage_Std']
-   # Reset index to make Meat_Type a column
-   summary_stats = summary_stats.reset_index()
-   # Saves the summary statistics to a CSV file
-   # No extra headers
-   summary_stats.to_csv('summary_stats.csv', index=False)
-   # Confirmation message
-   print("Summary statistics saved to 'summary_stats.csv")
-   # Computes Pearson Correlation between pH and Spoilage_Score
-   # corr tells the strength and direction of the relationship
-   # p_value tells you if the correlation is statistically significant
-   corr, p_value = pearsonr(df['pH'], df['Spoilage_Score'])
-   # prints the results of the correlation analysis
-   print(f"Correlation between pH and Spoilage Score: {corr:.2f} (p-value: {p_value:.4f})")
 
+        # ANOVA: Test pH differences across Meat_Types within each Group
+        # Loop through each group
+       for group in ['Fresh', 'Frozen-Thawed']:
+           # Filter data for group
+           group_df = df[df['Group'] == group]
+           # Create a list comprehension that builds a list of pH values for each unique meat type in that group
+           # Required for ANOVA function bc it needs 3 groups of data to compare
+           meat_phs = [group_df[group_df['Meat_Type'] == meat]['pH'] for meat in group_df['Meat_Type'].unique()]
+           # Perform ANOVA
+           f_stat, p_value = f_oneway(*meat_phs) #*meat_phs unpacks the list into separate arguments for each meat type
+           print(f"ANOVA (pH by Meat Type, {group}): F={f_stat:.2f}, p={p_value:.4f}")
 
 # Takes the Pandas DataFrame(df)
 def plot_data(df):
