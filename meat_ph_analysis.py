@@ -91,6 +91,19 @@ def analyze_data(df):
                corr, p_value = pearsonr(subset['Day'], subset['pH'])
                # Print correlation and p-value
                print(f"Correlation (pH vs. Day) for {meat} ({group}): {corr:.2f} (p-vale {p_value:.4f}")
+
+        # T-Test: Compare pH between Fresh and Frozen-Thawed for each Meat_Type
+        # Loop through each meat type
+       for meat in df['Meat_Type'].unique():
+           # Get pH for fresh group
+           fresh_ph = df[(df['Meat_Type'] == meat) & (df['Group'] == 'Fresh')]['pH']
+           # Get pH for frozen-thawed group
+           frozen_ph = df[(df['Meat_Type'] == meat) & (df['Group'] == 'Frazen-Thawed')]['pH']
+           # Perform t-test
+           t_stat, p_value = ttest_ind(fresh_ph, frozen_ph, equal_var=False)
+           # Print t-test results
+           print(f"T-test (Fresh vs. Frozen-Thawed) for {meat}: t={t_stat:.2f}, p={p_value:4f}")
+               
    # Standardizes the text in the Meat_Type column by capitalizing the first letter of each entry
    df['Meat_Type'] = df['Meat_Type'].str.capitalize()
    # Groups the data by Meat_Type
@@ -99,7 +112,7 @@ def analyze_data(df):
    summary_stats = df.groupby('Meat_Type').agg({
        'pH': ['mean', 'std'],
        'Spoilage_Score': ['mean', 'std']
-   }).round(2)
+     }).round(2)
    #Flaten multi-level columns to single level
    summary_stats.columns = ['pH_Mean', 'pH_Std', 'Spoilage_Mean', 'Spoilage_Std']
    # Reset index to make Meat_Type a column
@@ -115,6 +128,7 @@ def analyze_data(df):
    corr, p_value = pearsonr(df['pH'], df['Spoilage_Score'])
    # prints the results of the correlation analysis
    print(f"Correlation between pH and Spoilage Score: {corr:.2f} (p-value: {p_value:.4f})")
+
 
 # Takes the Pandas DataFrame(df)
 def plot_data(df):
