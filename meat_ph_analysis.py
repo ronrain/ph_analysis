@@ -167,6 +167,10 @@ def plot_data(df):
        plt.tight_layout()
        plt.savefig('ph_vs_day_scatter.png')
        plt.close()
+      # Handle errors during plotting
+   except Exception as e:
+        # Print specific error message
+        print(f"Error plotting data: {e}")
 
 # defines the main function, entry point of script
 def main():
