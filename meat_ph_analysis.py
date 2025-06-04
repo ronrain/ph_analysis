@@ -65,7 +65,7 @@ def analyze_data(df):
    if df is None:
        return
    # Remove any rows that are missing pH or Spoilage_Scores
-   # ENsures analysis isn't skewed or broken from missing values
+   # Ensures analysis isn't skewed or broken from missing values
    df = df.dropna(subset=['pH'])
    try:
        # Calculate summary statistics (mean, std, min, max) by Meat_Type and Group
@@ -115,101 +115,62 @@ def analyze_data(df):
            # Perform ANOVA
            f_stat, p_value = f_oneway(*meat_phs) #*meat_phs unpacks the list into separate arguments for each meat type
            print(f"ANOVA (pH by Meat Type, {group}): F={f_stat:.2f}, p={p_value:.4f}")
+    # Handle error during analysis
+   except Exception as e:
+       print(f"Error analyzing data: {e}")
+
 
 # Takes the Pandas DataFrame(df)
 def plot_data(df):
+   """Gnerate plots for pH trends and distributions."""
    # exits the function early of the data is invalid
    if df is None:
        return
-   # Creates a multi-page PDF named meat_ph_analysis_report.pdf and allows you to add multiple plots to it
-   with PdfPages('meat_ph_analysis_report.pdf') as pdf:
-       # First Plot: pH Over Time
-       # Starts a new figure (plot) with width 10 and height 6 inches.
-       plt.figure(figsize=(10, 6))
-       # Creates a line plot using Seaborn - x-axis is Date, y-axis is pH, color each lone based on Meat_Type and adds markers to each data point
-       sns.lineplot(data=df, x='Date', y='pH', hue='Meat_Type', marker='o')
-       # Added titles and labels
-       plt.title('Surface pH of Meat Products Over Time', fontsize=14)
+   try:
+       # Plot 1: pH Over Time by Meat_Type and Group
+       plt.figure(figsize=(12, 6))
+       sns.lineplot(data=df, x='Date', y='pH', hue='Meat_Type', style='Group', marker='o')
+       plt.title('Surface pH of Meat Products Over Time: Fresh vs. Frozen-Thawed', fontsize=14)
        plt.xlabel('Date', fontsize=12)
        plt.ylabel('pH', fontsize=12)
-       # Rotates x axis so no overlap
        plt.xticks(rotation=45)
-       # tight_layput() fixes spacing issues
        plt.tight_layout()
-       # Saves plot to PDF
-       pdf.savefig()
-       #Closes the plot to free memory before generating the next one
+       plt.savefig('ph_over_time.png')
        plt.close()
 
-
-       # Second Plot: Spoilage Score Over Time
-       # Starts a new figure (plot) with width 10 and height 6 inches.
+       # Plot 2: Box Plot of pH by eat_Type and Group
        plt.figure(figsize=(10, 6))
-       # Creates a line plot using Seaborn - x-axis is Date, y-axis is pH, color each lone based on Meat_Type and adds markers to each data point
-       sns.lineplot(data=df, x='Date', y='Spoilage_Score', hue='Meat_Type', marker='o')
-       # Added titles and labels
-       plt.title('Spoilage Score of Meat Products Over Time', fontsize=14)
-       plt.xlabel('Date', fontsize=12)
-       plt.ylabel('Spoilage Score (1=Fresh, 5=Spoiled)', fontsize=12)
-       # Rotates xaxis so no overlap
-       plt.xticks(rotation=45)
-       # tight_layput() fixes spacing issues
+       sns.boxplot(data=df, x='Meat_Type', y='pH', hue='Group')
+       plt.title('pH Distribution by Meat Type and Storage Condition', fontsize=14)
+       plt.xlabel('Meat_Type', fontsize=12)
+       plt.ylabel('pH', fontsize=12)
        plt.tight_layout()
-       # Saves plot to PDF
-       pdf.savefig()
-       #Closes the plot to free memory before generating the next one
+       plt.savefig('ph_boxplot.png')
        plt.close()
 
-def plot_additional_visuals(df):
-    """Generate additional plots for pH and spoilage analysis."""
-    try:
-        plt.figure(figsize=(8, 6))
-        sns.boxplot(x='Meat_Type', y='pH', data=df)
-        plt.title('pH Distribution by Meat Type')
-        plt.xlabel('Meat_Type')
-        plt.ylabel('pH')
-        plt.savefig('ph_boxplot.png')
-        plt.close()
-
-        plt.figure(figsize=(8, 6))
-        sns.scatterplot(x='pH', y='Spoilage_Score', hue='Meat_Type', data=df)
-        slope, intercept, _, _, _ = stats.linregress(df['pH'], df['Spoilage_Score'])
-        plt.plot(df['pH'], slope * df['pH'] + intercept, color='red', linestyle='--')
-        plt.title('pH vs Spoilage Score (Correlation: 0.74)')
-        plt.xlabel('pH')
-        plt.ylabel('Spoilage Score')
-        plt.savefig('ph_vs_spoilage_scatter.png')
-        plt.close()
-
-    except Exception as e:
-        print(f"Error predicting shelf life: {e}")
-
-# Prediction model for Shelf Life
-# Using df from DataFrame meat data
-# spoilage threshold using 4 as default
-def predict_shelf_life(df, spoilage_threshold=4.0):
-    """Predict shelf life (days until spoilage) for meat type"""
-    try:
-        # Filters the DataFrame to only include rows where meat is considereed spoiled
-        # Keeps only Meat_type and Date column for analysis
-        spoiled = df[df['Spoilage_Score'] >= spoilage_threshold][['Meat_Type', 'Date']]
-        # Groups the filtered data by Meat_Type, and finds the earliest spoilage date for each type
-        # reset_index() turns the groupby result into a clean DataFrame 
-        shelf_life = spoiled.groupby('Meat_Type')['Date'].min().reset_index()
-        # sets a fixed date (assumed production or packaging date)
-        start_date = pd.to_datetime('2025-06-01')
-        # adds a new column and calculates number of days from the start date until spoilage
-        shelf_life['Days_Until_Spoilage'] = (shelf_life['Date'] - start_date).dt.days
-        print("\nPredicted Shelf Life (days until spoilage score >= 4.0):")
-        print(shelf_life[['Meat_Type', 'Days_Until_Spoilage']])
-        return shelf_life
-    except Exception as e:
-        print(f"Error predicting shelf life: {e}")
-        return None
-
+       # Plot 3: pH vs Day Scatter with Regression Line
+       plt.figure(figsize=(10, 6))
+       sns.scatterplot(data=df, x='Day', y='pH', hue='Meat_Type', style='Group')
+       # Loops over each unique meat type in dataset
+       for meat in df['Meat_Type'].unique():
+           # for each meat type, loops over both storage conditions
+           for group in ['Fresg', 'Frozen-Thawed']:
+               # Filters dataframe to only include rows that specific meat + group
+               subset = df[(df['Meat_Type'] == meat) & (df['Group'] == group)]
+               # uses polyfit to perform linear regression
+               slope, intercept = np.polyfit(subset['Day'], subset['pH'], 1)
+               plt.plot(subset['Day'], slope * subset['Day'] + intercept, linestyle='--', label=f'{meat} ({group}) Fit')
+       plt.title('pH vs. Day with Regression Lines', fontsize=14)
+       plt.xlabel('Date', fontsize=12)
+       plt.ylabel('pH', fontsize=12)
+       plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+       plt.tight_layout()
+       plt.savefig('ph_vs_day_scatter.png')
+       plt.close()
 
 # defines the main function, entry point of script
 def main():
+    """Execute data loading, analysis, and plotting."""
    # Calls the load_data() function
    # Attempts to read and validate meat_ph_data.csv
    # returns a pandas DataFrame(df) or None if loading fails
@@ -222,7 +183,7 @@ def main():
        # Calls plot_data(df)
        # Generates two time-series plots (pH and spoilage over time) and saves them to PDF report
        plot_data(df)
-       print("Analysis complete. Check 'meat_ph_analysis_report.pdf' and 'summary_stats.csv'. ")
+       print("Analysis complete. Check 'ph_summary_stats.csv', 'ph_over_time.png', 'ph_boxplot.png', and 'ph_vs_day_scatter.png'.")
     shelf_life = predict_shelf_life(df)
     # If predicition was successful, saves the shelf life data to a CSV file
     # index=False means dont write the row numbers to the file
