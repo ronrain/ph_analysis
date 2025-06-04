@@ -184,14 +184,6 @@ def main():
        # Generates two time-series plots (pH and spoilage over time) and saves them to PDF report
        plot_data(df)
        print("Analysis complete. Check 'ph_summary_stats.csv', 'ph_over_time.png', 'ph_boxplot.png', and 'ph_vs_day_scatter.png'.")
-    shelf_life = predict_shelf_life(df)
-    # If predicition was successful, saves the shelf life data to a CSV file
-    # index=False means dont write the row numbers to the file
-    if shelf_life is not None:
-        shelf_life.to_csv('shelf_life_prediction.csv', index=False)
-   
-
-
 # Python built-in condition
 # __name__ is a special variable that sets
        #if the file is being run directly, __name__ == "__main__"
