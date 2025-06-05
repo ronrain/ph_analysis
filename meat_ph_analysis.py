@@ -39,7 +39,7 @@ for date in dates:
 
 # Create dataFrame
 df = pd.DataFrame(data, columns=['Date', 'Meat_Type', 'Group', 'pH'])
-df.tp_csv('meat_ph_data.csv', index=False)
+df.to_csv('meat_ph_data.csv', index=False)
 print("Fake data saved to 'meat_ph_data.csv")
 
 # Set seaborn's white grid style for clean, professional plots
@@ -70,10 +70,10 @@ def load_data(file_path='meat_ph_data.csv'):
        # Capitalize Meat_type for consistency
        df['Meat_Type'] = df['Meat_Type'].str.capitalize()
        # Ensure Group is either 'Fresh' or 'Frozen-Thawed'
-       df['Group'] = df['Group'].strcapitalize()
+       df['Group'] = df['Group'].str.capitalize()
        if not all (df['Group'].isin(['Fresh', 'Frozen-thawed'])):
            # Raise error for invalid group values
-           raise ValueError("Group column must contain only 'Fresh' or 'Frozen-Thawed")
+           raise ValueError("Group column must contain only 'Fresh' or 'Frozen-Thawed'")
        # Add 'Day' column (days since first date) for correlation analysis
        df['Day'] = (df['Date'] - df['Date'].min()).dt.days + 1
        # Return the loaded DataFrame once everything checks out and can be used throughout program
@@ -121,7 +121,7 @@ def analyze_data(df):
                # Calculate Pearson correlation between Day and pH
                corr, p_value = pearsonr(subset['Day'], subset['pH'])
                # Print correlation and p-value
-               print(f"Correlation (pH vs. Day) for {meat} ({group}): {corr:.2f} (p-vale {p_value:.4f}")
+               print(f"Correlation (pH vs. Day) for {meat} ({group}): {corr:.2f} (p-value {p_value:.4f}")
 
         # T-Test: Compare pH between Fresh and Frozen-Thawed for each Meat_Type
         # Loop through each meat type
@@ -129,7 +129,7 @@ def analyze_data(df):
            # Get pH for fresh group
            fresh_ph = df[(df['Meat_Type'] == meat) & (df['Group'] == 'Fresh')]['pH']
            # Get pH for frozen-thawed group
-           frozen_ph = df[(df['Meat_Type'] == meat) & (df['Group'] == 'Frazen-Thawed')]['pH']
+           frozen_ph = df[(df['Meat_Type'] == meat) & (df['Group'] == 'Frozen-Thawed')]['pH']
            # Perform t-test
            t_stat, p_value = ttest_ind(fresh_ph, frozen_ph, equal_var=False)
            # Print t-test results
@@ -153,7 +153,7 @@ def analyze_data(df):
 
 # Takes the Pandas DataFrame(df)
 def plot_data(df):
-   """Gnerate plots for pH trends and distributions."""
+   """Generate plots for pH trends and distributions."""
    # exits the function early of the data is invalid
    if df is None:
        return
@@ -185,7 +185,7 @@ def plot_data(df):
        # Loops over each unique meat type in dataset
        for meat in df['Meat_Type'].unique():
            # for each meat type, loops over both storage conditions
-           for group in ['Fresg', 'Frozen-Thawed']:
+           for group in ['Fresh', 'Frozen-Thawed']:
                # Filters dataframe to only include rows that specific meat + group
                subset = df[(df['Meat_Type'] == meat) & (df['Group'] == group)]
                # uses polyfit to perform linear regression
