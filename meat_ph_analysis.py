@@ -11,6 +11,37 @@ from scipy.stats import pearsonr, ttest_ind, f_oneway
 # Import PdfPages from matplotlib for saving plots to PDF
 from matplotlib.backends.backend_pdf import PdfPages
 
+# Creating fake data to test project
+# Define parameters
+meat_types = ['Beef', 'Chicken', 'Pork']
+groups = ['Fresh', 'Frozen-Thawed']
+dates = pd.date_range('2025-06-10', '2025-06-23')
+replicates = 3
+
+# Base pH and daily increase
+params = {
+    'Beef': {'Fresh': (5.60, 0.07), 'Frozen-Thawed': (5.68, 0.08)},
+    'Chicken': {'Fresh': (5.98, 0.08), 'Frozen-Thawed': (6.08, 0.09)},
+    'Pork': {'Fresh': (5.78, 0.07), 'Frozen-Thawed': (5.88, 0.08)}
+}
+
+# Generate Data
+data = []
+for date in dates:
+    day = (date - dates[0]).days + 1
+    for meat in meat_types:
+        for group in groups:
+            base_ph, daily_increase = params[meat][group]
+            mean_ph = base_ph +(day - 1) * daily_increase
+            for _ in range(replicates):
+                ph = np.round(mean_ph + np.random.normal(0, 0.02), 2)
+                data.append([date, meat, group,ph])
+
+# Create dataFrame
+df = pd.DataFrame(data, columns=['Date', 'Meat_Type', 'Group', 'pH'])
+df.tp_csv('meat_ph_data.csv', index=False)
+print("Fake data saved to 'meat_ph_data.csv")
+
 # Set seaborn's white grid style for clean, professional plots
 sns.set_style("whitegrid")
 
